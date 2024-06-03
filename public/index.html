@@ -5,8 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Shopping Cart</title>
     <link rel="stylesheet" href="./style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
   </head>
   <body>
-    <script src="./app.js"></script>
+    <nav>
+      <div
+        class="container min-w-full bg-violet-100 flex justify-between items-center p-3 sm:p-6 lg:py-4 lg:px-40"
+      >
+        <button class="menu-btn">
+          <i class="fa fa-bars !text-2xl text-violet-700"></i>
+        </button>
+        <h5 class="page-title text-xl uppercase font-primary font-semibold">
+          Restaurant
+        </h5>
+        <button class="shopping-cart-btn">
+          <i class="fa fa-shopping-cart !text-2xl text-violet-700"></i>
+        </button>
+      </div>
+    </nav>
+    <section id="products">
+      <div class="products-container font-primary py-10 px-5 lg:px-32">
+        <h1 class="heading text-center mt-10 text-5xl">
+          <span>Our </span><span class="font-semibold">Foods</span>
+        </h1>
+        <div
+          class="products-wrapper mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 justify-items-center"
+        ></div>
+      </div>
+    </section>
+    <script type="module" src="./app.js"></script>
   </body>
 </html>
