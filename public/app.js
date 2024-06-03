@@ -22,7 +22,8 @@ class UI {
                 $${item.price}
               </div>
               <button
-                class="add-to-cart bg-violet-100 text-violet-700 px-2 py-1 rounded"
+                class="add-to-cart bg-violet-100 text-violet-700 px-2 py-1 rounded" 
+                data-id=${item.id}
               >
                 <i class="fa fa-shopping-cart mr-2"></i>Add to Cart
               </button>
@@ -32,9 +33,15 @@ class UI {
     productsWrapper.innerHTML = resault;
   }
 }
-class Storage {}
+class Storage {
+  static saveProducts(products) {
+    localStorage.setItem("products", JSON.stringify(products));
+  }
+}
 document.addEventListener("DOMContentLoaded", () => {
-  const products = new Products();
+  const product = new Products();
+  const products = product.getProducts();
   const ui = new UI();
-  ui.showProducts(products.getProducts());
+  ui.showProducts(products);
+  Storage.saveProducts(products);
 });
