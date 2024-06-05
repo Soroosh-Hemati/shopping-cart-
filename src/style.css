@@ -10,3 +10,9 @@
 .products-wrapper .product {
   @apply w-full max-w-[300px] flex flex-col justify-center items-center overflow-hidden rounded-lg shadow-[0_15px_55px_rgba(35,35,35,0.15)] mb-6 cursor-pointer;
 }
+.modal.show-modal {
+  display: block;
+}
+cart-container.show-cart {
+  top: 33.33%;
+}

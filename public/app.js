@@ -1,5 +1,10 @@
 import { productsData } from "./products.js";
 const productsWrapper = document.querySelector(".products-wrapper");
+const cartBtn = document.querySelector(".shopping-cart-btn");
+const modal = document.querySelector(".modal");
+const backdrop = document.querySelector(".backdrop");
+
+let cart = [];
 
 class Products {
   getProducts() {
@@ -32,10 +37,36 @@ class UI {
     });
     productsWrapper.innerHTML = resault;
   }
+  getAddToCartBtns() {
+    const DOMAllBtns = document.querySelectorAll(".add-to-cart");
+    const AllBtns = [...DOMAllBtns];
+    AllBtns.forEach((btn) => {
+      const id = btn.dataset.id;
+      const isInCart = cart.find((product) => product.id === id);
+      if (isInCart) {
+        btn.innerText = "In Cart";
+        btn.disabled = true;
+      }
+      btn.addEventListener("click", (e) => {
+        e.target.innerText = "In Cart";
+        e.target.disabled = true;
+        const addedProduct = Storage.getProduct(id);
+        cart = [...cart, { ...addedProduct, quantity: 1 }];
+        Storage.saveCart(cart);
+      });
+    });
+  }
 }
 class Storage {
   static saveProducts(products) {
     localStorage.setItem("products", JSON.stringify(products));
+  }
+  static getProduct(id) {
+    const _products = JSON.parse(localStorage.getItem("products"));
+    return _products.find((p) => p.id === parseInt(id));
+  }
+  static saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
   }
 }
 document.addEventListener("DOMContentLoaded", () => {
@@ -43,5 +74,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const products = product.getProducts();
   const ui = new UI();
   ui.showProducts(products);
+  ui.getAddToCartBtns();
   Storage.saveProducts(products);
+});
+cartBtn.addEventListener("click", () => {
+  modal.classList.add("show-modal");
+});
+backdrop.addEventListener("click", () => {
+  modal.classList.remove("show-modal");
 });
