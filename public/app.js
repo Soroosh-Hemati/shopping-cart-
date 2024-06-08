@@ -3,7 +3,10 @@ const productsWrapper = document.querySelector(".products-wrapper");
 const cartBtn = document.querySelector(".shopping-cart-btn");
 const modal = document.querySelector(".modal");
 const backdrop = document.querySelector(".backdrop");
-
+const cartNumOfProducts = document.querySelector(".num-of-product");
+const totalCartPrice = document.querySelector(".total-price");
+const closeModalBtn = document.querySelector(".close-modal-btn");
+const cartItems = document.querySelector(".cart-products .products");
 let cart = [];
 
 class Products {
@@ -27,7 +30,7 @@ class UI {
                 $${item.price}
               </div>
               <button
-                class="add-to-cart bg-violet-100 text-violet-700 px-2 py-1 rounded" 
+                class="add-to-cart bg-violet-100 text-violet-700 px-2 py-1 rounded border border-violet-700 hover:bg-white transition-all duration-200 ease-linear" 
                 data-id=${item.id}
               >
                 <i class="fa fa-shopping-cart mr-2"></i>Add to Cart
@@ -50,11 +53,53 @@ class UI {
       btn.addEventListener("click", (e) => {
         e.target.innerText = "In Cart";
         e.target.disabled = true;
-        const addedProduct = Storage.getProduct(id);
-        cart = [...cart, { ...addedProduct, quantity: 1 }];
+        const addedProduct = { ...Storage.getProduct(id), quantity: 1 };
+        cart = [...cart, addedProduct];
         Storage.saveCart(cart);
+        this.setCartValue(cart);
+        this.addCartItem(addedProduct);
       });
     });
+  }
+  setCartValue(cart) {
+    let tempNumOfCartItems = 0;
+    const totalPrice = cart.reduce((acc, curr) => {
+      tempNumOfCartItems += curr.quantity;
+      return (acc += curr.quantity * curr.price);
+    }, 0);
+    totalCartPrice.innerText = `Total Price : $${totalPrice}`;
+    cartNumOfProducts.innerText = tempNumOfCartItems;
+  }
+  addCartItem(product) {
+    const li = document.createElement("li");
+    li.classList.add("product");
+    li.innerHTML = `<img
+    src="${product.imageURL}"
+    alt=""
+    class="product-img rounded w-[100px] h-[60px] object-cover"
+  />
+  <div class="flex flex-col justify-center items-center">
+    <div class="product-name uppercase font-medium">
+      ${product.title}
+    </div>
+    <div class="product-price text-gray-500">$${product.price}</div>
+  </div>
+  <div class="flex flex-col justify-center items-center">
+    <i
+      class="fa fa-chevron-up text-violet-500 cursor-pointer"
+    ></i>
+    <span class="product-quantity">${product.quantity}</span>
+    <i
+      class="fa fa-chevron-down text-red-600 cursor-pointer"
+    ></i>
+  </div>
+  <i class="fa fa-trash text-red-600 cursor-pointer"></i>`;
+    cartItems.appendChild(li);
+  }
+  setUpApp() {
+    cart = Storage.getCart() || [];
+    cart.forEach((cartItem) => this.addCartItem(cartItem));
+    this.setCartValue(cart);
   }
 }
 class Storage {
@@ -68,11 +113,15 @@ class Storage {
   static saveCart(cart) {
     localStorage.setItem("cart", JSON.stringify(cart));
   }
+  static getCart() {
+    return (cart = JSON.parse(localStorage.getItem("cart")));
+  }
 }
 document.addEventListener("DOMContentLoaded", () => {
   const product = new Products();
   const products = product.getProducts();
   const ui = new UI();
+  ui.setUpApp();
   ui.showProducts(products);
   ui.getAddToCartBtns();
   Storage.saveProducts(products);
@@ -81,5 +130,8 @@ cartBtn.addEventListener("click", () => {
   modal.classList.add("show-modal");
 });
 backdrop.addEventListener("click", () => {
+  modal.classList.remove("show-modal");
+});
+closeModalBtn.addEventListener("click", () => {
   modal.classList.remove("show-modal");
 });

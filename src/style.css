@@ -16,3 +16,6 @@
 cart-container.show-cart {
   top: 33.33%;
 }
+.cart-products .products .product {
+  @apply flex justify-between items-center mb-4;
+}
