@@ -7,7 +7,9 @@ const cartNumOfProducts = document.querySelector(".num-of-product");
 const totalCartPrice = document.querySelector(".total-price");
 const closeModalBtn = document.querySelector(".close-modal-btn");
 const cartItems = document.querySelector(".cart-products .products");
+const clearCart = document.querySelector(".clear-cart-btn");
 let cart = [];
+let buttonsDOM = [];
 
 class Products {
   getProducts() {
@@ -41,11 +43,12 @@ class UI {
     productsWrapper.innerHTML = resault;
   }
   getAddToCartBtns() {
-    const DOMAllBtns = document.querySelectorAll(".add-to-cart");
-    const AllBtns = [...DOMAllBtns];
-    AllBtns.forEach((btn) => {
+    const DOMAllBtns = [...document.querySelectorAll(".add-to-cart")];
+    buttonsDOM = DOMAllBtns;
+
+    DOMAllBtns.forEach((btn) => {
       const id = btn.dataset.id;
-      const isInCart = cart.find((product) => product.id === id);
+      const isInCart = cart.find((product) => product.id === parseInt(id));
       if (isInCart) {
         btn.innerText = "In Cart";
         btn.disabled = true;
@@ -86,20 +89,43 @@ class UI {
   </div>
   <div class="flex flex-col justify-center items-center">
     <i
-      class="fa fa-chevron-up text-violet-500 cursor-pointer"
+      class="fa fa-chevron-up text-violet-500 cursor-pointer data-id=${product.id}"
     ></i>
     <span class="product-quantity">${product.quantity}</span>
     <i
-      class="fa fa-chevron-down text-red-600 cursor-pointer"
+      class="fa fa-chevron-down text-red-600 cursor-pointer data-id=${product.id}"
     ></i>
   </div>
-  <i class="fa fa-trash text-red-600 cursor-pointer"></i>`;
+  <i class="fa fa-trash text-red-600 cursor-pointer data-id=${product.id}"></i>`;
     cartItems.appendChild(li);
   }
   setUpApp() {
     cart = Storage.getCart() || [];
     cart.forEach((cartItem) => this.addCartItem(cartItem));
     this.setCartValue(cart);
+  }
+  cartLogic() {
+    clearCart.addEventListener("click", () => this.clearCart());
+  }
+  clearCart() {
+    cart.forEach((cartItem) => this.removeCartItem(cartItem.id));
+    while (cartItems.children.length) {
+      cartItems.removeChild(cartItems.children[0]);
+    }
+    modal.classList.remove("show-modal");
+  }
+  removeCartItem(id) {
+    cart = cart.filter((cartItem) => cartItem.id != id);
+    this.setCartValue(cart);
+    Storage.saveCart(cart);
+    this.getSingleBtn(id);
+  }
+  getSingleBtn(id) {
+    const button = buttonsDOM.find(
+      (btn) => parseInt(btn.dataset.id) == parseInt(id)
+    );
+    button.innerText = "Add To Cart";
+    buttonsDOM.disabled = false;
   }
 }
 class Storage {
@@ -124,6 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ui.setUpApp();
   ui.showProducts(products);
   ui.getAddToCartBtns();
+  ui.cartLogic();
   Storage.saveProducts(products);
 });
 cartBtn.addEventListener("click", () => {

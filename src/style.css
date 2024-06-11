@@ -19,3 +19,6 @@ cart-container.show-cart {
 .cart-products .products .product {
   @apply flex justify-between items-center mb-4;
 }
+.fa-shopping-cart{
+  pointer-events: none;
+}
