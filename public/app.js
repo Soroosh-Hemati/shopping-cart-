@@ -89,14 +89,14 @@ class UI {
   </div>
   <div class="flex flex-col justify-center items-center">
     <i
-      class="fa fa-chevron-up text-violet-500 cursor-pointer data-id=${product.id}"
+      class="fa fa-chevron-up text-violet-500 cursor-pointer" data-id=${product.id}
     ></i>
     <span class="product-quantity">${product.quantity}</span>
     <i
-      class="fa fa-chevron-down text-red-600 cursor-pointer data-id=${product.id}"
+      class="fa fa-chevron-down text-red-600 cursor-pointer" data-id=${product.id}
     ></i>
   </div>
-  <i class="fa fa-trash text-red-600 cursor-pointer data-id=${product.id}"></i>`;
+  <i class="fa fa-trash text-red-600 cursor-pointer" data-id=${product.id}></i>`;
     cartItems.appendChild(li);
   }
   setUpApp() {
@@ -106,6 +106,41 @@ class UI {
   }
   cartLogic() {
     clearCart.addEventListener("click", () => this.clearCart());
+    cartItems.addEventListener("click", (event) => {
+      if (event.target.classList.contains("fa-chevron-up")) {
+        const addQuantity = event.target;
+        const addedItem = cart.find(
+          (cItem) => cItem.id == addQuantity.dataset.id
+        );
+        addedItem.quantity++;
+        this.setCartValue(cart);
+        Storage.saveCart(cart);
+        addQuantity.nextElementSibling.innerText = addedItem.quantity;
+      } else if (event.target.classList.contains("fa-trash")) {
+        const removeItem = event.target;
+        const _removedItem = cart.find(
+          (cItem) => cItem.id == removeItem.dataset.id
+        );
+        console.log(_removedItem);
+        this.removeCartItem(_removedItem.id);
+        Storage.saveCart(cart);
+        cartItems.removeChild(removeItem.parentElement);
+      } else if (event.target.classList.contains("fa-chevron-down")) {
+        const subQuantity = event.target;
+        const substractedItem = cart.find(
+          (cItem) => subQuantity.dataset.id == cItem.id
+        );
+        if (substractedItem.quantity === 1) {
+          this.removeCartItem(substractedItem.id);
+          cartItems.removeChild(subQuantity.parentElement.parentElement);
+          return;
+        }
+        substractedItem.quantity--;
+        this.setCartValue(cart);
+        Storage.saveCart(cart);
+        subQuantity.previousElementSibling.innerText = substractedItem.quantity;
+      }
+    });
   }
   clearCart() {
     cart.forEach((cartItem) => this.removeCartItem(cartItem.id));
